@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#4F46E5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>My Nouns 5000</title>
+<style>
+:root{--primary:#4F46E5;--primary-2:#7C3AED;--bg:#F5F6FA;--card:#FFF;--text:#1F2937;--text-2:#6B7280;--border:#E5E7EB;--success:#10B981;--danger:#EF4444;--warning:#F59E0B;--shadow:0 4px 16px rgba(0,0,0,0.08)}
+[data-theme=dark]{--bg:#0F172A;--card:#1E293B;--text:#F1F5F9;--text-2:#94A3B8;--border:#334155;--shadow:0 4px 16px rgba(0,0,0,0.4)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Naskh Arabic',sans-serif;background:var(--bg);color:var(--text);user-select:none;transition:background .3s,color .3s}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:600px;margin:0 auto;background:var(--bg)}
+.topbar{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(79,70,229,.3);z-index:10}
+.topbar h1{flex:1;font-size:16px;font-weight:800;text-align:center}
+.topbar button{background:rgba(255,255,255,.18);border:none;color:#fff;width:38px;height:38px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.topbar button:active{transform:scale(.9)}
+.screens{flex:1;overflow-y:auto;padding-bottom:80px}
+.screen{display:none;padding:16px;padding-bottom:100px;animation:fadeIn .25s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border-radius:20px;padding:20px;box-shadow:var(--shadow);margin-bottom:14px}
+.dash-hero{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border-radius:24px;padding:24px;margin-bottom:16px;box-shadow:0 8px 24px rgba(79,70,229,.35)}
+.dash-hero h2{font-size:22px;margin-bottom:4px;font-weight:800}
+.dash-hero p{opacity:.9;font-size:13px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--card);border-radius:16px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.stat .num{font-size:20px;font-weight:800;color:var(--primary)}
+.stat .lbl{font-size:11px;color:var(--text-2);margin-top:2px;font-weight:600}
+.progress-wrap{background:var(--card);border-radius:20px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
+.progress-header{display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px;font-weight:700}
+.progress-bar{height:10px;background:var(--border);border-radius:5px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-2));border-radius:5px;transition:width .5s ease}
+.big-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.big-btn{background:var(--card);border:none;border-radius:18px;padding:18px 14px;text-align:center;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s;font-family:inherit;color:var(--text)}
+.big-btn:active{transform:scale(.96)}
+.big-btn .ico{font-size:28px;display:block;margin-bottom:6px}
+.big-btn .ttl{font-size:13px;font-weight:700}
+.word-card{background:var(--card);border-radius:24px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:14px}
+.emoji-stage{height:220px;background:linear-gradient(135deg,#E0E7FF,#C7D2FE);display:flex;align-items:center;justify-content:center}
+[data-theme=dark] .emoji-stage{background:linear-gradient(135deg,#312E81,#4C1D95)}
+.emoji-stage .big-emoji{font-size:130px;line-height:1;animation:floaty 3s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.word-body{padding:20px;text-align:center}
+.word-en{font-size:34px;font-weight:800;color:var(--primary);margin-bottom:4px;direction:ltr;letter-spacing:-.5px}
+.word-ar{font-size:22px;font-weight:700;margin-bottom:12px}
+.word-meta{display:flex;gap:8px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+.chip{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:var(--border);color:var(--text-2)}
+.chip.level{background:#FEF3C7;color:#92400E}
+.chip.cat{background:#DBEAFE;color:#1E40AF}
+[data-theme=dark] .chip.level{background:#78350F;color:#FDE68A}
+[data-theme=dark] .chip.cat{background:#1E3A8A;color:#BFDBFE}
+.example-box{background:var(--bg);border-radius:12px;padding:12px;text-align:start;margin-bottom:8px}
+.example-box .en{font-size:14px;font-style:italic;color:var(--text);direction:ltr;margin-bottom:4px;text-align:start}
+.example-box .ar{font-size:13px;color:var(--text-2)}
+.btn{border:none;border-radius:14px;padding:12px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:transform .15s}
+.btn:active{transform:scale(.95)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 4px 12px rgba(79,70,229,.35)}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-warning{background:var(--warning);color:#fff}
+.btn-outline{background:var(--card);border:2px solid var(--border);color:var(--text)}
+.btn-ghost{background:var(--border);color:var(--text)}
+.btn-full{width:100%}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.action-row.three{grid-template-columns:repeat(3,1fr)}
+.search-bar{display:flex;gap:8px;margin-bottom:14px}
+.search-bar input{flex:1;padding:14px 16px;border:2px solid var(--border);border-radius:14px;background:var(--card);color:var(--text);font-size:15px;outline:none;font-family:inherit}
+.search-bar input:focus{border-color:var(--primary)}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px}
+.filters::-webkit-scrollbar{display:none}
+.filter-chip{padding:8px 14px;border-radius:20px;background:var(--card);border:2px solid var(--border);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.filter-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.word-item{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s}
+.word-item:active{transform:scale(.98)}
+.word-item .emoji{font-size:32px;flex-shrink:0}
+.word-item .info{flex:1;min-width:0}
+.word-item .en{font-size:16px;font-weight:700;direction:ltr;text-align:start}
+.word-item .ar{font-size:13px;color:var(--text-2);margin-top:2px}
+.word-item .mark{font-size:18px;flex-shrink:0}
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;padding-bottom:max(6px,env(safe-area-inset-bottom));box-shadow:0 -4px 12px rgba(0,0,0,.06);z-index:20}
+.bottom-nav button{flex:1;background:none;border:none;padding:8px 0 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text-2);font-size:10px;font-weight:700;font-family:inherit}
+.bottom-nav button .ico{font-size:20px}
+.bottom-nav button.active{color:var(--primary)}
+.splash{position:fixed;inset:0;background:linear-gradient(135deg,#4F46E5,#7C3AED);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;z-index:1000;transition:opacity .5s}
+.splash.hide{opacity:0;pointer-events:none}
+.splash .logo{font-size:70px;margin-bottom:16px;animation:floaty 2s infinite}
+.splash h1{font-size:30px;font-weight:800;margin-bottom:6px}
+.splash p{font-size:14px;opacity:.9}
+.quiz-options{display:grid;gap:10px}
+.quiz-opt{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:16px;font-size:15px;font-weight:700;cursor:pointer;text-align:center;font-family:inherit;color:var(--text);transition:all .2s}
+.quiz-opt:active{transform:scale(.97)}
+.quiz-opt.correct{background:var(--success);color:#fff;border-color:var(--success)}
+.quiz-opt.wrong{background:var(--danger);color:#fff;border-color:var(--danger)}
+.big-stat{background:var(--card);border-radius:20px;padding:20px;margin-bottom:12px;box-shadow:var(--shadow)}
+.big-stat .label{font-size:13px;color:var(--text-2);margin-bottom:4px;font-weight:600}
+.big-stat .value{font-size:28px;font-weight:800;color:var(--primary)}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);background:#1F2937;color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:2000;opacity:0;transition:all .3s;max-width:90%}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--danger)}
+.empty{text-align:center;padding:40px 20px;color:var(--text-2)}
+.empty .ico{font-size:48px;margin-bottom:12px}
+.empty p{font-size:14px}
+.section-title{font-size:16px;font-weight:800;margin-bottom:10px;margin-top:6px}
+.hidden{display:none!important}
+input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--border);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--primary)}
+textarea{width:100%;min-height:120px;padding:10px;border-radius:12px;border:2px solid var(--border);background:var(--bg);color:var(--text);font-family:monospace;font-size:12px;outline:none}
+::-webkit-scrollbar{width:0;height:0}
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <div class="logo">📚</div>
+  <h1>My Nouns 5000</h1>
+  <p id="splashText">Learn 5,000 English Nouns</p>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <button id="langBtn">🌐</button>
+    <h1 id="appTitle">My Nouns 5000</h1>
+    <button id="themeBtn">🌙</button>
+  </div>
+
+  <div class="screens" id="screens">
+    <!-- HOME -->
+    <section class="screen active" id="screen-home">
+      <div class="dash-hero">
+        <h2 id="heroTitle">📚 My Nouns 5000</h2>
+        <p id="heroSub">تعلم الأسماء الإنجليزية</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat"><div class="num" id="statTotal">0</div><div class="lbl" id="lblTotal">الإجمالي</div></div>
+        <div class="stat"><div class="num" id="statLearned">0</div><div class="lbl" id="lblLearned">متعلم</div></div>
+        <div class="stat"><div class="num" id="statSaved">0</div><div class="lbl" id="lblSaved">محفوظ</div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-header"><span id="lblProgress">التقدم</span><span id="progressPct">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--text-2)">
+          <span id="progressText">0 / 0</span><span id="streakText">🔥 0</span>
+        </div>
+      </div>
+      <div class="big-buttons">
+        <button class="big-btn" onclick="startLearn()"><span class="ico">📖</span><span class="ttl" id="btnStart">ابدأ التعلم</span></button>
+        <button class="big-btn" onclick="startQuiz()"><span class="ico">🎯</span><span class="ttl" id="btnQuiz">اختبر نفسك</span></button>
+        <button class="big-btn" onclick="go('search')"><span class="ico">🔍</span><span class="ttl" id="btnSearch">بحث</span></button>
+        <button class="big-btn" onclick="go('categories')"><span class="ico">📂</span><span class="ttl" id="btnCats">التصنيفات</span></button>
+      </div>
+    </section>
+
+    <!-- LEARN -->
+    <section class="screen" id="screen-learn">
+      <div id="learnEmpty" class="empty hidden"><div class="ico">🎉</div><p id="learnEmptyText">أكملت جميع الكلمات!</p></div>
+      <div id="learnContent">
+        <div class="word-card">
+          <div class="emoji-stage"><div class="big-emoji" id="lEmoji">📖</div></div>
+          <div class="word-body">
+            <div class="word-en" id="lWord">book</div>
+            <div class="word-ar" id="lArabic">كتاب</div>
+            <div class="word-meta"><span class="chip cat" id="lCat">School</span><span class="chip level" id="lLevel">L1</span></div>
+            <button class="btn btn-primary btn-full" onclick="speakCurrent()" style="margin-bottom:12px">🔊 <span id="lListen">استمع</span></button>
+            <div class="example-box"><div class="en" id="lExample"></div><div class="ar" id="lExampleAr"></div></div>
+            <button class="btn btn-ghost btn-full" onclick="speakExample()" style="margin-top:8px;font-size:12px">🔊 <span id="lListenEx">استمع للمثال</span></button>
+          </div>
+        </div>
+        <div class="action-row three">
+          <button class="btn btn-success" onclick="markLearn('learned')">✓ <span id="lKnow">أعرفها</span></button>
+          <button class="btn btn-warning" onclick="markLearn('review')">↻ <span id="lReview">راجعها</span></button>
+          <button class="btn btn-outline" onclick="nextWord()">→ <span id="lNext">التالي</span></button>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-ghost" id="lSaveBtn" onclick="toggleSave()">⭐ <span id="lSave">حفظ</span></button>
+          <button class="btn btn-ghost" onclick="speakCurrent()">🔊 <span id="lSpeak">نطق</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- REVIEW -->
+    <section class="screen" id="screen-review">
+      <h2 class="section-title" id="reviewTitle">🔄 كلمات للمراجعة</h2>
+      <div id="reviewList"></div>
+    </section>
+
+    <!-- SAVED -->
+    <section class="screen" id="screen-saved">
+      <h2 class="section-title" id="savedTitle">⭐ الكلمات المحفوظة</h2>
+      <div id="savedList"></div>
+    </section>
+
+    <!-- PROGRESS -->
+    <section class="screen" id="screen-progress">
+      <h2 class="section-title" id="progTitle">📊 التقدم</h2>
+      <div class="big-stat"><div class="label" id="pTotal">إجمالي الأسماء</div><div class="value" id="pTotalVal">0</div></div>
+      <div class="big-stat"><div class="label" id="pLearned">تم تعلمها</div><div class="value" id="pLearnedVal">0</div></div>
+      <div class="big-stat"><div class="label" id="pRemaining">المتبقية</div><div class="value" id="pRemainingVal">0</div></div>
+      <div class="big-stat"><div class="label" id="pSaved">محفوظة</div><div class="value" id="pSavedVal">0</div></div>
+      <div class="big-stat"><div class="label" id="pReview">تحتاج مراجعة</div><div class="value" id="pReviewVal">0</div></div>
+      <div class="big-stat"><div class="label" id="pPoints">النقاط</div><div class="value" id="pPointsVal">0</div></div>
+      <div class="big-stat"><div class="label" id="pStreak">الأيام المتتالية</div><div class="value" id="pStreakVal">🔥 0</div></div>
+      <div class="progress-wrap">
+        <div class="progress-header"><span id="pPctLabel">النسبة المكتملة</span><span id="pPctVal">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="pFill" style="width:0%"></div></div>
+      </div>
+      <button class="btn btn-ghost btn-full" onclick="exportData()" style="margin-bottom:8px">📤 تصدير التقدم</button>
+      <button class="btn btn-ghost btn-full" onclick="importData()">📥 استيراد التقدم</button>
+    </section>
+
+    <!-- SEARCH -->
+    <section class="screen" id="screen-search">
+      <div class="search-bar"><input id="searchInput" placeholder="ابحث بالإنجليزية أو العربية..." oninput="doSearch()"></div>
+      <div class="filters" id="filterBar"></div>
+      <div id="searchResults"></div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="screen" id="screen-categories">
+      <h2 class="section-title" id="catsTitle">📂 التصنيفات</h2>
+      <div id="categoriesList"></div>
+    </section>
+
+    <!-- CATEGORY DETAIL -->
+    <section class="screen" id="screen-catdetail">
+      <h2 class="section-title" id="catDetailTitle"></h2>
+      <div id="catDetailList"></div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="screen" id="screen-quiz">
+      <div class="word-card">
+        <div class="emoji-stage"><div class="big-emoji" id="qEmoji">📖</div></div>
+        <div class="word-body"><div class="word-en" id="qPrompt" style="font-size:20px">What is this?</div></div>
+      </div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div style="text-align:center;margin-top:16px"><button class="btn btn-ghost" onclick="startQuiz()">🔄 <span id="qNew">سؤال جديد</span></button></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="screen" id="screen-settings">
+      <h2 class="section-title">⚙️ الإعدادات</h2>
+      <div class="card">
+        <div class="section-title">🔊 النطق</div>
+        <div style="margin-bottom:8px;font-size:13px;color:var(--text-2)"><span id="lblRate">السرعة</span>: <span id="rateVal">0.9</span></div>
+        <input type="range" id="rateRange" min="0.5" max="1.5" step="0.1" value="0.9" oninput="setRate(this.value)">
+        <div style="margin:12px 0 8px;font-size:13px;color:var(--text-2)"><span id="lblPitch">النبرة</span>: <span id="pitchVal">1.0</span></div>
+        <input type="range" id="pitchRange" min="0.5" max="1.5" step="0.1" value="1.0" oninput="setPitch(this.value)">
+      </div>
+      <div class="card">
+        <div class="section-title">📥 استيراد كلمات جديدة</div>
+        <p style="font-size:12px;color:var(--text-2);margin-bottom:8px">الصيغة: [["sun","شمس","Nature",1,"The sun is bright.","الشمس مشرقة.","☀️"]]</p>
+        <textarea id="importText" placeholder='[["sun","شمس","Nature",1,"The sun is bright.","الشمس مشرقة.","☀️"]]'></textarea>
+        <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="importNouns()">➕ استيراد الكلمات</button>
+      </div>
+    </section>
+  </div>
+
+  <nav class="bottom-nav">
+    <button data-screen="home" class="active" onclick="go('home')"><span class="ico">🏠</span><span id="navHome">الرئيسية</span></button>
+    <button data-screen="learn" onclick="go('learn')"><span class="ico">📖</span><span id="navLearn">تعلم</span></button>
+    <button data-screen="review" onclick="go('review')"><span class="ico">🔄</span><span id="navReview">مراجعة</span></button>
+    <button data-screen="saved" onclick="go('saved')"><span class="ico">⭐</span><span id="navSaved">محفوظة</span></button>
+    <button data-screen="progress" onclick="go('progress')"><span class="ico">📊</span><span id="navProgress">تقدمي</span></button>
+    <button data-screen="settings" onclick="go('settings')"><span class="ico">⚙️</span><span id="navSettings">إعدادات</span></button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================
+   MY NOUNS 5000 — Verified Nouns Database
+   Format: [word, arabic, category, level, example, example_ar, emoji]
+   ============================================ */
+const RAW_NOUNS = [
+// === PEOPLE (20) ===
+["man","رجل","People",1,"The man is reading a book.","الرجل يقرأ كتاباً.","👨"],
+["woman","امرأة","People",1,"The woman is smiling.","المرأة تبتسم.","👩"],
+["boy","ولد","People",1,"The boy plays football.","الولد يلعب كرة القدم.","👦"],
+["girl","بنت","People",1,"The girl sings well.","البنت تغني جيداً.","👧"],
+["baby","طفل صغير","People",1,"The baby is sleeping.","الطفل نائم.","👶"],
+["child","طفل","People",1,"The child is happy.","الطفل سعيد.","🧒"],
+["father","أب","People",1,"My father is tall.","أبي طويل.","👨"],
+["mother","أم","People",1,"My mother cooks well.","أمي تطبخ جيداً.","👩"],
+["brother","أخ","People",1,"My brother is young.","أخي صغير.","🧑"],
+["sister","أخت","People",1,"My sister is kind.","أختي لطيفة.","👧"],
+["son","ابن","People",2,"Their son is smart.","ابنهم ذكي.","👦"],
+["daughter","ابنة","
