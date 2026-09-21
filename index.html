@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#4F46E5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>تعلم الأسماء الإنجليزية</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #4F46E5; color: #1F2937; user-select: none; }
+#app { position: fixed; inset: 0; display: flex; flex-direction: column; background: #F9FAFB; max-width: 500px; margin: 0 auto; box-shadow: 0 0 40px rgba(0,0,0,0.2); }
+.header { background: linear-gradient(135deg, #4F46E5, #7C3AED); color: white; padding: 16px 20px; padding-top: max(16px, env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(79,70,229,0.3); z-index: 10; }
+.header h1 { font-size: 18px; font-weight: 700; }
+.header .counter { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+.screen { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; display: none; }
+.screen.active { display: block; }
+.word-card { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.08); animation: slideIn 0.4s ease; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.image-wrap { width: 100%; height: 240px; background: linear-gradient(135deg, #E0E7FF, #C7D2FE); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.image-wrap img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s; }
+.image-wrap .loader { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 48px; animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+.card-body { padding: 20px; text-align: center; }
+.word { font-size: 40px; font-weight: 800; color: #4F46E5; letter-spacing: -1px; margin-bottom: 6px; direction: ltr; }
+.translation { font-size: 24px; font-weight: 600; color: #1F2937; margin-bottom: 12px; }
+.example { font-size: 15px; color: #6B7280; font-style: italic; line-height: 1.5; padding: 12px; background: #F3F4F6; border-radius: 12px; direction: ltr; }
+.settings { background: white; border-radius: 20px; padding: 16px; margin-top: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.setting-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.setting-row:last-child { margin-bottom: 0; }
+.setting-row label { font-size: 13px; font-weight: 600; color: #4B5563; width: 50px; }
+input[type="range"] { flex: 1; -webkit-appearance: none; height: 6px; border-radius: 3px; background: #E5E7EB; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #4F46E5; cursor: pointer; box-shadow: 0 2px 6px rgba(79,70,229,0.4); }
+.setting-value { font-size: 13px; font-weight: 700; color: #4F46E5; width: 30px; text-align: center; }
+.actions { display: flex; gap: 10px; margin-top: 16px; justify-content: center; flex-wrap: wrap; }
+.btn { border: none; border-radius: 16px; padding: 14px 20px; font-size: 15px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: inherit; }
+.btn:active { transform: scale(0.96); }
+.btn-primary { background: linear-gradient(135deg, #4F46E5, #7C3AED); color: white; box-shadow: 0 4px 14px rgba(79,70,229,0.4); flex: 1; }
+.btn-record { background: linear-gradient(135deg, #EF4444, #DC2626); color: white; box-shadow: 0 4px 14px rgba(239,68,68,0.4); flex: 1; }
+.btn-record.recording { animation: recordPulse 1s ease-in-out infinite; }
+@keyframes recordPulse { 0%,100% { box-shadow: 0 4px 14px rgba(239,68,68,0.4); } 50% { box-shadow: 0 4px 24px rgba(239,68,68,0.9); } }
+.btn-nav { background: white; color: #4F46E5; border: 2px solid #E0E7FF; width: 56px; height: 56px; padding: 0; border-radius: 16px; font-size: 20px; justify-content: center; }
+.score { margin-top: 16px; padding: 16px; border-radius: 16px; font-weight: 700; text-align: center; font-size: 16px; display: none; animation: slideIn 0.3s ease; }
+.score.show { display: block; }
+.score.good { background: #D1FAE5; color: #065F46; }
+.score.ok { background: #FEF3C7; color: #92400E; }
+.score.bad { background: #FEE2E2; color: #991B1B; }
+.score.info { background: #DBEAFE; color: #1E40AF; }
+.score small { display: block; font-weight: 400; font-size: 13px; margin-top: 4px; opacity: 0.8; }
+.chat-screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+.chat-screen.active { display: flex; }
+.messages { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 20px; background: #F9FAFB; }
+.message { max-width: 82%; padding: 12px 16px; border-radius: 18px; margin-bottom: 10px; font-size: 15px; line-height: 1.5; word-wrap: break-word; animation: slideIn 0.3s ease; }
+.message.user { background: linear-gradient(135deg, #4F46E5, #7C3AED); color: white; margin-left: auto; border-bottom-left-radius: 18px; border-bottom-right-radius: 4px; }
+.message.ai { background: white; color: #1F2937; border-bottom-right-radius: 18px; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.typing { display: flex; gap: 4px; padding: 12px 16px; background: white; border-radius: 18px; width: fit-content; }
+.typing span { width: 8px; height: 8px; background: #9CA3AF; border-radius: 50%; animation: typing 1.4s infinite; }
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing { 0%,60%,100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-6px); opacity: 1; } }
+.chat-input-wrap { padding: 12px 16px; padding-bottom: max(12px, env(safe-area-inset-bottom)); background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; align-items: center; }
+.chat-input-wrap input { flex: 1; padding: 12px 16px; border: 2px solid #E5E7EB; border-radius: 24px; font-size: 15px; outline: none; font-family: inherit; transition: border-color 0.2s; }
+.chat-input-wrap input:focus { border-color: #4F46E5; }
+.chat-input-wrap button { width: 44px; height: 44px; border-radius: 50%; border: none; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.navbar { position: absolute; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #E5E7EB; display: flex; padding-bottom: max(8px, env(safe-area-inset-bottom)); box-shadow: 0 -4px 12px rgba(0,0,0,0.05); z-index: 10; }
+.navbar button { flex: 1; background: none; border: none; padding: 10px 0 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #9CA3AF; font-size: 11px; font-weight: 600; font-family: inherit; transition: color 0.2s; }
+.navbar button.active { color: #4F46E5; }
+.navbar button svg { width: 24px; height: 24px; }
+::-webkit-scrollbar { width: 0; }
+.splash { position: fixed; inset: 0; background: linear-gradient(135deg, #4F46E5, #7C3AED); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; z-index: 100; transition: opacity 0.5s; }
+.splash.hide { opacity: 0; pointer-events: none; }
+.splash .logo { font-size: 80px; margin-bottom: 20px; animation: pulse 1.5s infinite; }
+.splash h2 { font-size: 24px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <div class="logo">📚</div>
+  <h2>تعلم الأسماء الإنجليزية</h2>
+</div>
+
+<div id="app">
+  <div class="header">
+    <h1 id="headerTitle">📖 تعلم الأسماء</h1>
+    <div class="counter" id="counter">1 / 20</div>
+  </div>
+
+  <div class="screen active" id="learnScreen">
+    <div class="word-card">
+      <div class="image-wrap">
+        <div class="loader" id="imgLoader">🖼️</div>
+        <img id="wordImage" style="opacity:0" onload="this.style.opacity='1';document.getElementById('imgLoader').style.display='none'" onerror="this.style.opacity='0'">
+      </div>
+      <div class="card-body">
+        <div class="word" id="wordText">apple</div>
+        <div class="translation" id="translationText">تفاحة</div>
+        <div class="example" id="exampleText">I eat an apple every day.</div>
+      </div>
+    </div>
+
+    <div class="settings">
+      <div class="setting-row">
+        <label>السرعة</label>
+        <input type="range" id="rate" min="0.5" max="1.5" step="0.1" value="0.9">
+        <div class="setting-value" id="rateVal">0.9</div>
+      </div>
+      <div class="setting-row">
+        <label>النبرة</label>
+        <input type="range" id="pitch" min="0.5" max="1.5" step="0.1" value="1.0">
+        <div class="setting-value" id="pitchVal">1.0</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-nav" onclick="changeNoun(-1)">◀</button>
+      <button class="btn btn-primary" onclick="speakWord()">🔊 استماع</button>
+      <button class="btn btn-record" id="recordBtn" onclick="toggleRecord()">🎤 سجّل</button>
+      <button class="btn btn-nav" onclick="changeNoun(1)">▶</button>
+    </div>
+
+    <div class="score" id="score"></div>
+  </div>
+
+  <div class="chat-screen" id="chatScreen">
+    <div class="messages" id="messages">
+      <div class="message ai">مرحباً! 👋 أنا مساعدك لتعلم الإنجليزية. اسألني عن أي كلمة، أو اطلب مني جملة، أو تحدث معي بالإنجليزية!</div>
+    </div>
+    <div class="chat-input-wrap">
+      <input id="chatInput" placeholder="اكتب رسالتك..." onkeypress="if(event.key==='Enter')sendMessage()">
+      <button onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <div class="navbar">
+    <button class="active" id="navLearn" onclick="switchTab('learn')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      <span>التعلم</span>
+    </button>
+    <button id="navChat" onclick="switchTab('chat')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+      <span>المحادثة</span>
+    </button>
+  </div>
+</div>
+
+<script src="https://js.puter.com/v2/"></script>
+<script>
+const nouns = [
+  { word: "apple", translation: "تفاحة", example: "I eat an apple every day.", keyword: "apple-fruit" },
+  { word: "book", translation: "كتاب", example: "She reads a book before bed.", keyword: "book-reading" },
+  { word: "car", translation: "سيارة", example: "The car is very fast.", keyword: "car-red" },
+  { word: "dog", translation: "كلب", example: "The dog is barking loudly.", keyword: "dog-pet" },
+  { word: "house", translation: "منزل", example: "This is my beautiful house.", keyword: "house-home" },
+  { word: "tree", translation: "شجرة", example: "The tree is very tall.", keyword: "tree-green" },
+  { word: "water", translation: "ماء", example: "I drink water every morning.", keyword: "water-glass" },
+  { word: "food", translation: "طعام", example: "The food is delicious.", keyword: "food-meal" },
+  { word: "city", translation: "مدينة", example: "I live in a big city.", keyword: "city-buildings" },
+  { word: "friend", translation: "صديق", example: "He is my best friend.", keyword: "friends-people" },
+  { word: "school", translation: "مدرسة", example: "I go to school by bus.", keyword: "school-building" },
+  { word: "computer", translation: "كمبيوتر", example: "I use a computer for work.", keyword: "computer-laptop" },
+  { word: "phone", translation: "هاتف", example: "My phone is brand new.", keyword: "smartphone-phone" },
+  { word: "table", translation: "طاولة", example: "Put the book on the table.", keyword: "table-wood" },
+  { word: "chair", translation: "كرسي", example: "Please sit on the chair.", keyword: "chair-furniture" },
+  { word: "window", translation: "نافذة", example: "Open the window, please.", keyword: "window-room" },
+  { word: "door", translation: "باب", example: "Close the door quietly.", keyword: "door-wooden" },
+  { word: "sun", translation: "شمس", example: "The sun is bright today.", keyword: "sun-sky" },
+  { word: "moon", translation: "قمر", example: "The moon is beautiful tonight.", keyword: "moon-night" },
+  { word: "star", translation: "نجمة", example: "I can see a star in the sky.", keyword: "star-sky" }
+];
+
+let currentIndex = 0;
+let isRecording = false;
+let recognition = null;
+
+const rateEl = document.getElementById('rate');
+const pitchEl = document.getElementById('pitch');
+const rateVal = document.getElementById('rateVal');
+const pitchVal = document.getElementById('pitchVal');
+
+rateEl.oninput = () => rateVal.textContent = rateEl.value;
+pitchEl.oninput = () => pitchVal.textContent = pitchEl.value;
+
+function loadNoun(index) {
+  if (index < 0) index = nouns.length - 1;
+  if (index >= nouns.length) index = 0;
+  currentIndex = index;
+  const noun = nouns[currentIndex];
+  document.getElementById('wordText').textContent = noun.word;
+  document.getElementById('translationText').textContent = noun.translation;
+  document.getElementById('exampleText').textContent = noun.example;
+  document.getElementById('counter').textContent = currentIndex + 1 + ' / ' + nouns.length;
+  document.getElementById('score').className = 'score';
+  const img = document.getElementById('wordImage');
+  const loader = document.getElementById('imgLoader');
+  loader.style.display = 'flex';
+  img.style.opacity = '0';
+  img.src = 'https://loremflickr.com/640/480/' + noun.keyword + '?lock=' + currentIndex;
+  localStorage.setItem('lastIndex', currentIndex);
+}
+
+function changeNoun(delta) { loadNoun(currentIndex + delta); }
+
+function speakWord() {
+  const noun = nouns[currentIndex];
+  speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(noun.word);
+  utt.lang = 'en-US';
+  utt.rate = parseFloat(rateEl.value);
+  utt.pitch = parseFloat(pitchEl.value);
+  const voices = speechSynthesis.getVoices();
+  const usVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || voices.find(v => v.lang === 'en-US');
+  if (usVoice) utt.voice = usVoice;
+  speechSynthesis.speak(utt);
+}
+
+function toggleRecord() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { showScore('bad', 'المتصفح لا يدعم التعرف على الصوت', 'استخدم Chrome'); return; }
+  if (isRecording && recognition) { recognition.stop(); return; }
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.onstart = () => {
+    isRecording = true;
+    document.getElementById('recordBtn').classList.add('recording');
+    document.getElementById('recordBtn').innerHTML = '⏹ إيقاف';
+    showScore('info', '🎙️ جاري الاستماع...', 'انطق الكلمة بوضوح');
+  };
+  recognition.onresult = (e) => {
+    const spoken = e.results[0][0].transcript.trim().toLowerCase();
+    const target = nouns[currentIndex].word.toLowerCase();
+    const score = similarity(spoken, target);
+    let cls, msg;
+    if (score >= 90) { cls = 'good'; msg = '🎉 ممتاز!'; }
+    else if (score >= 70) { cls = 'ok'; msg = '👍 جيد، حاول مرة أخرى'; }
+    else { cls = 'bad'; msg = '💪 حاول مرة أخرى'; }
+    showScore(cls, msg + ' (' + score + '%)', 'قلت: "' + spoken + '"');
+  };
+  recognition.onerror = (e) => { showScore('bad', '⚠️ خطأ', e.error === 'no-speech' ? 'لم أسمع صوتاً' : e.error); stopRecording(); };
+  recognition.onend = () => stopRecording();
+  recognition.start();
+}
+
+function stopRecording() {
+  isRecording = false;
+  const btn = document.getElementById('recordBtn');
+  btn.classList.remove('recording');
+  btn.innerHTML = '🎤 سجّل';
+}
+
+function showScore(cls, text, sub) {
+  sub = sub || '';
+  const el = document.getElementById('score');
+  el.className = 'score show ' + cls;
+  el.innerHTML = text + (sub ? '<small>' + sub + '</small>' : '');
+}
+
+function similarity(a, b) {
+  if (!a || !b) return 0;
+  const longer = a.length > b.length ? a : b;
+  const shorter = a.length > b.length ? b : a;
+  if (!longer.length) return 100;
+  const dist = levenshtein(longer, shorter);
+  return Math.round(((longer.length - dist) / longer.length) * 100);
+}
+
+function levenshtein(s1, s2) {
+  const m = s1.length, n = s2.length;
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = s1[i-1] === s2[j-1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost);
+    }
+  }
+  return dp[m][n];
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addMessage(text, 'user');
+  const typingId = addTyping();
+  try {
+    const response = await puter.ai.chat('أنت معلم لغة إنجليزية ودود. المستخدم عربي يتعلم الإنجليزية. اجعل ردودك قصيرة ومشجعة. إذا سألك عن كلمة، أعط معناها بالعربية ومثال عليها بالإنجليزية. المستخدم كتب: ' + text);
+    removeTyping(typingId);
+    const reply = typeof response === 'string' ? response : (response && response.message && response.message.content ? response.message.content : (response && response.text ? response.text : 'حسناً!'));
+    addMessage(reply, 'ai');
+  } catch (err) {
+    removeTyping(typingId);
+    addMessage('⚠️ حدث خطأ في الاتصال. تأكد من اتصالك بالإنترنت.', 'ai');
+  }
+}
+
+function addMessage(text, sender) {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'message ' + sender;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+let typingCounter = 0;
+function addTyping() {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'message ai typing';
+  const id = 'typing-' + (++typingCounter);
+  div.id = id;
+  div.innerHTML = '<span></span><span></span><span></span>';
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+  return id;
+}
+
+function removeTyping(id) { const el = document.getElementById(id); if (el) el.remove(); }
+
+function switchTab(tab) {
+  const learnScreen = document.getElementById('learnScreen');
+  const chatScreen = document.getElementById('chatScreen');
+  const navLearn = document.getElementById('navLearn');
+  const navChat = document.getElementById('navChat');
+  const headerTitle = document.getElementById('headerTitle');
+  const counter = document.getElementById('counter');
+  if (tab === 'learn') {
+    learnScreen.classList.add('active');
+    chatScreen.classList.remove('active');
+    navLearn.classList.add('active');
+    navChat.classList.remove('active');
+    headerTitle.textContent = '📖 تعلم الأسماء';
+    counter.style.display = 'block';
+  } else {
+    learnScreen.classList.remove('active');
+    chatScreen.classList.add('active');
+    navLearn.classList.remove('active');
+    navChat.classList.add('active');
+    headerTitle.textContent = '🤖 المحادثة الذكية';
+    counter.style.display = 'none';
+  }
+}
+
+window.addEventListener('load', () => {
+  const saved = parseInt(localStorage.getItem('lastIndex') || '0');
+  loadNoun(saved);
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  setTimeout(() => { document.getElementById('splash').classList.add('hide'); }, 1200);
+});
+
+document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
+</script>
+</body>
+</html>
